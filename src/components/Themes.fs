@@ -20,7 +20,7 @@ let buildStyle chord : IStyleAttribute list =
                         | Some s when (String.length s) > 3 -> 20
                         | _ -> 24)
         style.color "white"
-        style.fontStyle.oblique
+        style.fontStyle.italic
         style.fontWeight 700
     ]
     if isValidChord chord then style else []

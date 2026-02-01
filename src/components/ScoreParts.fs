@@ -51,13 +51,13 @@ let lyricInputOverlay ctx model beatIndex =
         ]
     ]
     
-let beatCell ctx model (beatIndex: int) =
+let beatCell ctx model beatIndex =
     let isEditing i lane =
         model.cursor = Some { beatIndex = i; lane = lane }
         
     let chord =
         model.chords
-        |> Map.tryFind beatIndex
+        |> Map.tryFind (Beats beatIndex)
 
     let text =
         chord
@@ -112,7 +112,7 @@ let lyricCell ctx (model:Model) beatIndex =
             style.left ((beatIndex % ctx.beatsPerMeasure) * (beatWidthPx + 1))
             style.minWidth 500
             style.minHeight 24
-            style.zIndex beatIndex
+            style.zIndex beatIndex 
         ]
         
         prop.onClick (fun _ -> ctx.dispatch (ClickBeat(beatIndex, Lyric)))
@@ -127,7 +127,7 @@ let lyricCell ctx (model:Model) beatIndex =
     ]
     
 
-let bar (ctx: RenderContext) model (barIndex: int) =
+let bar (ctx: RenderContext) model barIndex =
     vStack
         [
             style.gap 0           
@@ -177,7 +177,7 @@ let rowView ctx model  rowIndex =
             ]
             (hStack []
             [
-                for i in 0..(ctx.barsPerRow-1) -> bar ctx model (rowIndex*ctx.barsPerRow + i)        
+                for i in 0..(ctx.barsPerRow - (Bars 1)) -> bar ctx model (rowIndex*ctx.barsPerRow + i)        
             ])
         ]
         

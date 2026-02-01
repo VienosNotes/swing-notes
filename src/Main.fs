@@ -40,6 +40,7 @@ module Main =
             draft = None
             lyrics = Map.empty
             chords = Map.empty
+            sections = Map.empty
         }
         let model, dispatch =
             React.useReducer(
