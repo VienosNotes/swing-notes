@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Types.fs" />
     <Compile Include="components/Counter.fs" />
     <Compile Include="components\Themes.fs" />
     <Compile Include="components\Primitives.fs" />

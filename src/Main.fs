@@ -1,55 +1,15 @@
 namespace App
 
+open App.Types
 open App.components
 open App.components.ScoreParts
+open Elmish.Sub
 open Feliz
 open Fable.Core
 open Fable.Core.JsInterop
 
 module Main =
 
-    type Lane = Chord | Lyric
-    
-    type Beats = Beats of int
-    
-    type Cursor = {
-        beatIndex: int
-        lane: Lane
-    }
-        
-    type LyricEventMode =
-        | Auto
-        | FixedLength of Beats    
-    
-    type LyricEvent = {
-        text: string
-        mode: LyricEventMode
-    }
-    
-    type ChordEvent = {
-        text: string
-    }    
-    
-    type Msg =
-        | ClickBeat of beatIndex: int * lane: Lane
-        | InputText of string
-        | Commit
-        | Cancel        
-                
-    type Model = {
-        cursor: Cursor option
-        lyrics: Map<int, LyricEvent>
-        chords: Map<int, ChordEvent>
-        dispatch: Msg -> unit
-        draft: string option
-    }
-    
-    let defaultCtx = {
-            beatsPerMeasure = 4
-            barsPerRow = 4
-            maxRows = 20
-            padBars = 0
-        }
     
     let update msg model =
         match msg with
@@ -75,7 +35,26 @@ module Main =
     [<ReactComponent>]
     let El() =
         importSideEffects "./App.css"
+        let initModel = {
+            cursor = None
+            draft = None
+            lyrics = Map.empty
+            chords = Map.empty
+        }
+        let model, dispatch =
+            React.useReducer(
+                (fun (model: Model) (msg: Msg) -> update msg model),
+                initModel
+            )
+            
+        let defaultCtx = {
+            beatsPerMeasure = 4
+            barsPerRow = 4
+            maxRows = 20
+            padBars = 0
+            dispatch = dispatch
+        }
         
         Html.div [            
-            sectionView defaultCtx
+            sectionView defaultCtx model
         ]
