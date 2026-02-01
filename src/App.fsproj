@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <Compile Include="components/Counter.fs" />
+    <Compile Include="components\Themes.fs" />
+    <Compile Include="components\Primitives.fs" />
     <Compile Include="components\ScoreParts.fs" />
     <Compile Include="Main.fs" />
     <Compile Include="Main.test.fs" />
