@@ -51,13 +51,13 @@ let lyricInputOverlay ctx model beatIndex =
         ]
     ]
     
-let beatCell ctx model beatIndex =
+let beatCell ctx model (beatIndex: Beats) =
     let isEditing i lane =
         model.cursor = Some { beatIndex = i; lane = lane }
         
     let chord =
         model.chords
-        |> Map.tryFind (Beats beatIndex)
+        |> Map.tryFind beatIndex
 
     let text =
         chord
@@ -109,10 +109,10 @@ let lyricCell ctx (model:Model) beatIndex =
             style.textJustify.interCharacter
             style.wordBreak.breakAll
             style.bottom 0
-            style.left ((beatIndex % ctx.beatsPerMeasure) * (beatWidthPx + 1))
+            style.left ((beatIndex % ctx.beatsPerMeasure).v * (beatWidthPx + 1))
             style.minWidth 500
             style.minHeight 24
-            style.zIndex beatIndex 
+            style.zIndex beatIndex.v
         ]
         
         prop.onClick (fun _ -> ctx.dispatch (ClickBeat(beatIndex, Lyric)))
@@ -127,7 +127,7 @@ let lyricCell ctx (model:Model) beatIndex =
     ]
     
 
-let bar (ctx: RenderContext) model barIndex =
+let bar (ctx: RenderContext) model (barIndex: Bars) =
     vStack
         [
             style.gap 0           
@@ -143,7 +143,7 @@ let bar (ctx: RenderContext) model barIndex =
                     style.height 24
                 ]
                 [
-                    for i in 0..(ctx.beatsPerMeasure-1) -> lyricCell ctx model (barIndex*ctx.beatsPerMeasure + i)
+                    for i in 0..(ctx.beatsPerMeasure.v-1) -> lyricCell ctx model (Beats (barIndex.v*ctx.beatsPerMeasure.v + i))
                 ]
             hStack
                 [
@@ -153,7 +153,7 @@ let bar (ctx: RenderContext) model barIndex =
             
                 ]
                 [
-                    for i in 0..(ctx.beatsPerMeasure-1) -> beatCell ctx model (barIndex*ctx.beatsPerMeasure + i)
+                    for i in 0..(ctx.beatsPerMeasure.v-1) -> beatCell ctx model (Beats (barIndex.v *ctx.beatsPerMeasure.v + i))
                 ]
         ]
 
@@ -173,11 +173,11 @@ let rowView ctx model  rowIndex =
                     style.fontStyle.italic
                     style.fontFamily "Times New Roman, serif"
                 ]
-                prop.text $"#{rowIndex * ctx.barsPerRow + 1}"
+                prop.text $"#{rowIndex * ctx.barsPerRow.v + 1}"
             ]
             (hStack []
             [
-                for i in 0..(ctx.barsPerRow - (Bars 1)) -> bar ctx model (rowIndex*ctx.barsPerRow + i)        
+                for i in 0..(ctx.barsPerRow.v - 1) -> bar ctx model (Bars (rowIndex*ctx.barsPerRow.v + i))        
             ])
         ]
         

@@ -49,10 +49,10 @@ module Main =
             )
             
         let defaultCtx = {
-            beatsPerMeasure = 4
-            barsPerRow = 4
+            beatsPerMeasure = Beats 4
+            barsPerRow = Bars 4
             maxRows = 20
-            padBars = 0
+            padBars = Bars 0
             dispatch = dispatch
         }
         

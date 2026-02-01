@@ -6,8 +6,9 @@ module Types =
     type Lane = Chord | Lyric
 
     type Beats = Beats of int with
-        static member (+) (Beats a, Beats b) = Beats (a + b)
-        static member (-) (Beats a, Beats b) = Beats (a - b)
+        static member (+) (Beats a, Beats b) : Beats = Beats (a + b)
+        static member (-) (Beats a, Beats b) : Beats = Beats (a - b)
+        static member (%) (Beats a, Beats b) : Beats = Beats (a % b)
         member this.v =
             let (Beats v) = this
             v
