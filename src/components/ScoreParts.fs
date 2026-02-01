@@ -8,25 +8,6 @@ open App.components.Primitives
 open App.components.Themes
 open Feliz
 
-
-
-
-let beatCell model (beatIndex: int) =
-    Html.div [
-        prop.style [
-            style.width beatWidthPx
-            style.height beatHeightPx
-            style.display.flex
-            style.alignItems.center
-            style.justifyContent.center
-            style.cursor.pointer
-            style.backgroundColor defaultBackground
-            style.color "gray"
-        ]
-        prop.text (string beatIndex)
-        prop.onClick (fun _ -> printfn $"Clicked beat {beatIndex}")        
-    ]    
-
 let lyricInputOverlay ctx model beatIndex =
     Html.input [
         prop.value (model.draft |> Option.defaultValue String.Empty)
@@ -35,8 +16,7 @@ let lyricInputOverlay ctx model beatIndex =
         prop.onChange (fun (ev:Browser.Types.Event) ->
             let value = (ev.currentTarget :?> Browser.Types.HTMLInputElement).value |> string
             ctx.dispatch (InputText value)
-        )
-        
+        )        
         
         prop.onKeyDown (fun ev ->
             match ev.key with
@@ -70,6 +50,43 @@ let lyricInputOverlay ctx model beatIndex =
             style.zIndex 10
         ]
     ]
+    
+let beatCell ctx model (beatIndex: int) =
+    let isEditing i lane =
+        model.cursor = Some { beatIndex = i; lane = lane }
+        
+    let chord =
+        model.chords
+        |> Map.tryFind beatIndex
+
+    let text =
+        chord
+        |> Option.map _.text
+        
+    Html.div [
+        prop.style ([
+            style.position.relative
+            style.width beatWidthPx
+            style.height beatHeightPx
+            style.display.flex
+            style.alignItems.center
+            style.justifyContent.center
+            style.cursor.pointer
+            style.backgroundColor defaultBackground
+            style.color "gray"
+        ] @ (buildStyle text))
+        
+        prop.onClick (fun _ -> ctx.dispatch (ClickBeat(beatIndex, Chord)))
+        
+        prop.children [
+            Html.div [
+                prop.text (text |> Option.defaultValue (beatIndex |> string))
+            ]
+            if isEditing beatIndex Chord then
+                lyricInputOverlay ctx model beatIndex
+        ]
+    ]    
+
 
 let lyricCell ctx (model:Model) beatIndex =
     let isEditing i lane =
@@ -96,7 +113,6 @@ let lyricCell ctx (model:Model) beatIndex =
             style.minWidth 500
             style.minHeight 24
             style.zIndex beatIndex
-
         ]
         
         prop.onClick (fun _ -> ctx.dispatch (ClickBeat(beatIndex, Lyric)))
@@ -137,7 +153,7 @@ let bar (ctx: RenderContext) model (barIndex: int) =
             
                 ]
                 [
-                    for i in 0..(ctx.beatsPerMeasure-1) -> beatCell model (barIndex*ctx.beatsPerMeasure + i)
+                    for i in 0..(ctx.beatsPerMeasure-1) -> beatCell ctx model (barIndex*ctx.beatsPerMeasure + i)
                 ]
         ]
 
